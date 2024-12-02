@@ -32,6 +32,8 @@ ariadne2 Branch
 Upcoming Release
 ================
 
+* Feature: Introduce geothermal district heating (direct utilisation and heat pumps). Potentials are based on `Manz et al. 2024: Spatial analysis of renewable and excess heat potentials for climate-neutral district heating in Europe <https://www.sciencedirect.com/science/article/pii/S0960148124001769>`.
+
 * Added option to reduce central heating forward temperatures by annual percentage (see rule :mod:`build_central_heating_temperature_profiles`). This makes COP profiles and heat pump efficiencies planning-horizon-dependent. Myopic and perfect foresight modes were adjusted accordingly to update COPs of existing heat pumps in preceding years to adjusted temperatures.
 
 * Rearranged workflow to cluster the electricity network before calculating

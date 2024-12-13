@@ -845,11 +845,15 @@ def add_heating_capacities_installed_before_baseyear(
     logger.debug(f"Adding heating capacities installed before {baseyear}")
 
     for heat_system in existing_heating.columns.get_level_values(0).unique():
-        heat_system = HeatSystem(heat_system)
 
-        nodes = pd.Index(
-            n.buses.location[n.buses.index.str.contains(f"{heat_system} heat")]
+        nodes = (
+            n.buses.loc[n.buses.carrier == f"{heat_system} heat"]
+            .index.str.split("urban central|residential|services", regex=True)
+            .str[0]
+            .str.strip()
         )
+
+        heat_system = HeatSystem(heat_system)
 
         if (not heat_system == HeatSystem.URBAN_CENTRAL) and options[
             "electricity_distribution_grid"

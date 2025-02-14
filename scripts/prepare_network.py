@@ -323,11 +323,20 @@ if __name__ == "__main__":
     if "snakemake" not in globals():
         from _helpers import mock_snakemake
 
+        import os
+
+        # Change directory to the location of this script+
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
         snakemake = mock_snakemake(
             "prepare_network",
-            clusters="37",
-            ll="v1.0",
-            opts="Co2L-4H",
+            simpl="",
+            clusters=27,
+            opts="",
+            ll="vopt",
+            sector_opts="none",
+            planning_horizons="2045",
+            run="LowStandingLosses",
         )
     configure_logging(snakemake)
     set_scenario_config(snakemake)

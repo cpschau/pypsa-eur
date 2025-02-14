@@ -173,6 +173,7 @@ def plot_map(
     fig, ax = plt.subplots(subplot_kw={"projection": proj})
     fig.set_size_inches(7, 6)
 
+    tech_colors = tech_colors.reindex(carriers).fillna("lightgrey")
     n.plot(
         bus_sizes=costs / bus_size_factor,
         bus_colors=tech_colors,

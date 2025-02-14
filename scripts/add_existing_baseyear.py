@@ -158,6 +158,8 @@ def add_power_capacities_installed_before_baseyear(n, grouping_years, costs, bas
         "OCGT": "OCGT",
         "CCGT": "CCGT",
         "Bioenergy": "solid biomass",
+        # "Waste": "waste",
+        # "nicht biogener Abfall": "waste",
     }
 
     # If heat is considered, add CHPs in the add_heating_capacities function.
@@ -475,7 +477,10 @@ def add_chp_plants(n, grouping_years, costs, baseyear):
     chp["grouping_year"] = np.take(
         grouping_years, np.digitize(chp.DateIn, grouping_years, right=True)
     )
-    chp["lifetime"] = chp.DateOut - chp["grouping_year"] + 1
+    chp["lifetime"] = (chp.DateOut - chp["grouping_year"] + 1).fillna(
+        snakemake.params.costs["fill_values"]["lifetime"]
+    )
+    chp = chp.loc[chp.grouping_year + chp.lifetime >= baseyear]
 
     # check if the CHPs were read in from MaStR for Germany
     if "Capacity_thermal" in chp.columns:
@@ -885,7 +890,8 @@ def add_heating_capacities_installed_before_baseyear(
             # get number of years of each interval
             _years = valid_grouping_years.diff()
             # Fill NA from .diff() with value for the first interval
-            _years[0] = valid_grouping_years[0] - baseyear + default_lifetime
+            if valid_grouping_years.size > 1:
+                _years[0] = valid_grouping_years[0] - baseyear + default_lifetime
             # Installation is assumed to be linear for the past
             ratios = _years / _years.sum()
 
@@ -1084,15 +1090,20 @@ if __name__ == "__main__":
     if "snakemake" not in globals():
         from _helpers import mock_snakemake
 
+        import os
+
+        # Change directory to this script
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
         snakemake = mock_snakemake(
             "add_existing_baseyear",
-            configfiles="config/config.yaml",
-            clusters="27",
-            ll="vopt",
+            simpl="",
+            clusters=27,
             opts="",
+            ll="vopt",
             sector_opts="none",
-            planning_horizons="2020",
-            run="KN2045_Bal_v4",
+            planning_horizons="2045",
+            run="No_PTES",
         )
 
     configure_logging(snakemake)

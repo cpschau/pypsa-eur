@@ -29,7 +29,20 @@ Outputs
 """
 
 import geopandas as gpd
-from _helpers import set_scenario_config
+import sys
+import os
+
+sys.path.append(
+    os.path.join(os.getcwd(), "pypsa-ariadne/workflow/submodules/pypsa-eur/scripts")
+)
+sys.path.append(
+    os.path.join(os.getcwd(), "pypsa-ariadne/workflow/submodules/pypsa-eur")
+)
+sys.path.append(os.path.join(os.getcwd(), "pypsa-ariadne/workflow/scripts"))
+sys.path.append(os.path.join(os.getcwd(), ".."))
+sys.path.append(os.path.join(os.getcwd(), "../.."))
+sys.path.append(os.path.join(os.getcwd(), "../submodules/pypsa-eur/scripts"))
+from _helpers import set_scenario_config, update_config_from_wildcards
 
 from scripts.build_heat_source_potentials.onshore_region_data import OnshoreRegionData
 
@@ -61,10 +74,18 @@ if __name__ == "__main__":
 
         snakemake = mock_snakemake(
             "build_heat_source_potentials",
-            clusters=48,
+            simpl="",
+            clusters=27,
+            opts="",
+            ll="vopt",
+            sector_opts="none",
+            planning_horizons="2045",
+            run="LowPTESCAPEX",
+            heat_source="geothermal",
         )
 
     set_scenario_config(snakemake)
+    update_config_from_wildcards(snakemake.config, snakemake.wildcards)
 
     regions_onshore = gpd.read_file(snakemake.input.regions_onshore)
     heat_source_utilisation_potential = gpd.read_file(
